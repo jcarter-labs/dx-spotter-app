@@ -61,7 +61,7 @@ Two sources feed the app; everything else comes from the operator's controls. Pa
 - CW check: the client-side check is authoritative; server-side mode filtering is not trusted.
 - Checks:
   1. Connect: login succeeds within 10 s and the dot goes green. Save a raw capture in this folder, before any filtering, of 50 spot lines or 5 minutes, whichever comes first.
-  1a. Band filter: after login, the server-side band filter command is sent and acknowledged. Command and acknowledgement text stay open until a live session (see Tech). The filter asks for 20 m only (the band containing the default frequency).
+  1a. Band filter: after login, the server-side band filter command is sent and acknowledged. Command and acknowledgement text stay open until a live session (see Tech). The filter asks for the band containing the current frequency (20 m at the default).
   1b. Band change: on a frequency in a different HF amateur band (Tech table), the `cluster_client` worker thread clears the old server filter, sends the new band filter, and the old-band spots are flushed. A frequency outside any HF amateur band shows a warning and keeps the last filter. Tested live by changing bands: the new band's spots arrive and the old band's are gone.
   2. Parse: every captured line gives frequency (kHz to MHz), call, mode and skimmer, or an explicit reject. Accepted plus rejected equals lines read.
   3. Filter: only CW lines from the selected list are shown, per the skimmer match and CW check; Local/Regional switching changes the set. The capture must include a matching suffix, a non-matching suffix and a non-CW line; if the 5-minute capture has none, add hand-made lines marked as such.
