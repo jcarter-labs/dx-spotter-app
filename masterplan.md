@@ -47,7 +47,7 @@ Numbered as in `idea.md`, most important first. Defaults: frequency 14.045 MHz, 
 
 3. **Centre frequency and bandwidth controls**
    - Does: types a frequency in MHz and presses Set; picks a bandwidth from the menu.
-   - Sees: the scale re-centres on the frequency and spans ± bandwidth/2.
+   - Sees: the scale re-centres on the frequency and spans ± bandwidth/2. If the new frequency is in a different HF amateur band, the server filter changes to that band and old-band spots are flushed; if it is outside any HF amateur band, a warning shows and the last filter is kept.
    - Testable: frequency accepted from 1.8 to 30 MHz inclusive; an entry outside that range, or not a number, is rejected and the current frequency is kept; bandwidth menu offers exactly 10, 20, 40, 50, 80, 100 kHz; Window span = bandwidth (for example 50 kHz at 14.045 shows 14.020 to 14.070).
 
 4. **Click a call sign to copy it**
@@ -96,6 +96,7 @@ Only two sources feed the app. Everything else on screen comes from the operator
 - Checks:
   1. Connect: a login to the real server succeeds within 10 s and the dot goes green. Record a raw capture to a file in this folder, taken before any filtering, of 50 spot lines or 5 minutes, whichever comes first.
   1a. Server band filter: after login, the server-side band filter command is sent and the server acknowledges it. The exact command and acknowledgement text are not in `idea.md`; they stay open until a live session, then are recorded in Tech. The filter asks for only the band containing the default frequency (20 m).
+  1b. Band change: when the operator sets a frequency in a different HF amateur band (the table in Tech), the `cluster_client` worker thread clears the old server filter, sends the new band filter, and the old-band spots are flushed from the display. A frequency outside any HF amateur band shows a warning and keeps the last filter. Tested against the live server by changing bands and checking that the new band's spots arrive and the old band's are gone.
   2. Parse: replaying the capture through the parser gives, for every line, frequency (kHz to MHz), call, mode and skimmer, or an explicit reject. No line is silently lost. Count accepted plus rejected equals lines read.
   3. Filter: from the capture, only CW lines from the selected list are shown, using the skimmer match and client-side CW check above; switching Local/Regional changes the set as in Features #2. The capture must include lines that test the match: a matching suffix, a non-matching suffix, and a non-CW mode. If the 5-minute capture has none, these cases are added as hand-made test lines and marked as such.
   4. Range: spots outside the displayed window are not drawn; spots inside are placed linearly.
@@ -121,7 +122,7 @@ The status dot covers the cluster only. POTA shows its poll age ("POTA: last pol
 
 ### Open points
 - The POTA.app endpoint and its JSON fields stay open for Tech.
-- The server-side band filter command and its acknowledgement text (see check 1a). The band requested is 20 m only; what happens when the operator sets a frequency on another band is not decided.
+- The server-side band filter command and its acknowledgement text (see check 1a). The band requested follows the operator's frequency (see check 1b).
 
 ## Screen list
 
@@ -189,6 +190,24 @@ Rules between modules:
 
 The Task 1 measuring script is a separate tool, not part of the app.
 
+## HF amateur bands (for the band filter)
+
+Standard US amateur bands, edges inclusive, in MHz. A frequency inside one of these is "in a band"; a frequency in a gap, or outside them, is "outside any HF amateur band".
+
+| Band | Low | High |
+|---|---|---|
+| 160 m | 1.800 | 2.000 |
+| 80 m | 3.500 | 4.000 |
+| 40 m | 7.000 | 7.300 |
+| 30 m | 10.100 | 10.150 |
+| 20 m | 14.000 | 14.350 |
+| 17 m | 18.068 | 18.168 |
+| 15 m | 21.000 | 21.450 |
+| 12 m | 24.890 | 24.990 |
+| 10 m | 28.000 | 29.700 |
+
+60 m is not in this list, so it counts as outside any band. Edges are the standard US allocations written from knowledge, not from a captured source; check them once before the build relies on them.
+
 ## Open until a live session
 
 Each item below stays open until it is taken from a saved live capture, never from memory, and the capture file is named next to the item when it is closed.
@@ -246,5 +265,6 @@ Done when: against live data, each feature behaves as in Spec Features (frequenc
 - 5.2 Resize: minimum 400 x 700, layout scales above it.
 - 5.3 Full screen-list check, both source checks live, failure tests, responsiveness check; update the known limitations list.
 - 5.4 One documented launch command, `docs/setup.md` complete, final test run, commit and push.
+- 5.5 Final step: review what went wrong during the build (failed tests, rework, surprises, known limitations) and propose masterplan updates, one line each, for the operator's approval. Nothing in the masterplan changes until approved.
 
-Done when: every screen-list element passes by measurement, every check above passes or is listed as a known limitation, and the app starts from a fresh clone using only `docs/setup.md`.
+Done when: every screen-list element passes by measurement, every check above passes or is listed as a known limitation, and the app starts from a fresh clone using only `docs/setup.md`, and the 5.5 review and its proposed updates are shown for approval.
