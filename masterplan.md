@@ -95,7 +95,7 @@ Only two sources feed the app. Everything else on screen comes from the operator
 - CW check: the client-side CW check is authoritative. Server-side mode filtering is not trusted, so every line is checked for CW in the app regardless of what the server was asked to send.
 - Checks:
   1. Connect: a login to the real server succeeds within 10 s and the dot goes green. Record a raw capture to a file in this folder, taken before any filtering, of 50 spot lines or 5 minutes, whichever comes first.
-  1a. Server band filter: after login, the server-side band filter command is sent and the server acknowledges it. The exact command and acknowledgement text are not in `idea.md`; they stay open until a live session, then are recorded in Tech. Which band(s) the filter asks for is also not specified.
+  1a. Server band filter: after login, the server-side band filter command is sent and the server acknowledges it. The exact command and acknowledgement text are not in `idea.md`; they stay open until a live session, then are recorded in Tech. The filter asks for only the band containing the default frequency (20 m).
   2. Parse: replaying the capture through the parser gives, for every line, frequency (kHz to MHz), call, mode and skimmer, or an explicit reject. No line is silently lost. Count accepted plus rejected equals lines read.
   3. Filter: from the capture, only CW lines from the selected list are shown, using the skimmer match and client-side CW check above; switching Local/Regional changes the set as in Features #2. The capture must include lines that test the match: a matching suffix, a non-matching suffix, and a non-CW mode. If the 5-minute capture has none, these cases are added as hand-made test lines and marked as such.
   4. Range: spots outside the displayed window are not drawn; spots inside are placed linearly.
@@ -121,7 +121,7 @@ The status dot covers the cluster only. POTA shows its poll age ("POTA: last pol
 
 ### Open points
 - The POTA.app endpoint and its JSON fields stay open for Tech.
-- The server-side band filter command, its acknowledgement text, and which band(s) it requests (see check 1a).
+- The server-side band filter command and its acknowledgement text (see check 1a). The band requested is 20 m only; what happens when the operator sets a frequency on another band is not decided.
 
 ## Screen list
 
@@ -218,7 +218,7 @@ Done when: every check in 1.1 passes, `pytest` runs inside the venv, and the mea
 - 2.4 `cluster_client` (socket worker thread, login, band filter, raw lines and status items on the queue, reconnect at 5, 10, 30 s then every 60 s).
 - 2.5 `pota_client` (60 s poll, raw records on the queue, a status item on failure with old spots kept).
 - 2.6 Test both clients against the live servers, including a forced disconnect and reconnect, a blocked network, and a POTA failure.
-- 2.7 A bare window showing live RBN and POTA spots as two plain text lists (call, freq, age), fed through the queue. No bandmap, no layout, no styling, no client-side filtering; each list keeps only its last 50 entries, and the server-side band filter stays on. The window's `after()` tick drains the queue with a small temporary drain, which `app` replaces in 3.5.
+- 2.7 A bare window showing live RBN and POTA spots as two plain text lists (call, freq, age), fed through the queue. No bandmap, no layout, no styling, no client-side filtering; each list keeps only its last 50 entries, and the server-side band filter stays on, requesting only the band containing the default frequency (20 m). 2.7 depends on 2.1, which confirms the filter command. If 2.1 cannot confirm it, 2.7 drops off-band spots client-side and logs "server filter unconfirmed" until it is fixed. The window's `after()` tick drains the queue with a small temporary drain, which `app` replaces in 3.5.
 
 Done when: both captures are saved and the Tech table is closed, each parser's accepted plus rejected equals the items read, and both clients pass the live checks, including reconnect with the retry count, and the bare window shows live spots in both lists within 60 s of starting.
 
