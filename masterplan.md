@@ -120,7 +120,7 @@ Right area: control panel, light grey, x ~298 to 492, left-aligned at x ~312
 | Area | Choice | Why |
 |---|---|---|
 | Platform | macOS only | Confirmed by the operator; "my platforms" in the Constitution means macOS. |
-| Language | Python 3.13 or later (python.org or Homebrew, never `/usr/bin/python3`) with Tk 8.6 or 9.x, venv at `./.venv` | Matches the operator's other projects and global setup; the system Python's Tk is too old. |
+| Language | Python 3.13 or later (python.org or Homebrew, never `/usr/bin/python3`) with Tk 8.6 or 9.x, venv at `./.venv` | The system Python's Tk is too old. |
 | GUI | Tkinter (ttk widgets, Canvas for the bandmap) | The screenshot looks like a Tk app; ships with Python; Canvas suits scales, leader lines and click-to-copy. Fading blends the text colour toward the white background, since Tk has no text transparency. Light colours are forced whatever the macOS appearance. |
 | Cluster link | Standard-library `socket` in a worker thread, spots passed to the GUI through a queue | No extra package; fits Tk's event loop. `telnetlib` is not used (removed in Python 3.13). |
 | POTA HTTP | `requests`, polled every 60 s in a worker thread | Simple timeouts and error handling. |
