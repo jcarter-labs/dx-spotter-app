@@ -42,7 +42,7 @@ Numbered as in `idea.md`. Defaults: frequency 14.045 MHz, bandwidth 50 kHz, wind
 7. **Resizable window** (drag the edges); the layout follows.
    - Test: the control panel and status lines stay fully visible; the scales stretch to the new canvas height.
 
-### Decisions on points `idea.md` left open
+### Decisions (beyond idea.md)
 1. Status dot: green connected, amber connecting, red disconnected. Auto-reconnect with backoff 5, 10, 30 s, then every 60 s; show retry count. The dot covers the cluster only; POTA shows its poll age, and a POTA failure does not change the dot.
 2. Fade: linear from full opacity to 15% over the selected window (5, 10 or 15 min, default 10); never fully invisible; drop the spot when older than the window.
 3. Minimum window: 400 x 700 px; layout scales above that; the screenshot (492 x 1189) is the reference.
