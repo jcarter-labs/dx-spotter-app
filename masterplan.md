@@ -8,6 +8,9 @@ RULE: When code and masterplan disagree, propose only major changes, one line ea
 RULE: Measure UI layout with pixels against reference measurements; never claim "matches" from a visual impression.
 RULE: Keep the app responsive while it works, never stuck waiting on data or input.
 RULE: Keep a short list of known limitations in the masterplan; update it as we go.
+RULE: Run each stage without stopping; stop for my review only at stage end, on a failed test, or when you need my decision.
+RULE: Test connections to outside data with real servers before building screens that depend on them.
+RULE: Get a simple version running early, then add features one at a time, testing each.
 
 # Spec
 
@@ -199,37 +202,49 @@ Each item below stays open until it is taken from a saved live capture, never fr
 
 # Tasks
 
-Every step below follows the Constitution: after each working step, run all tests, show proof, commit and push; after each change to the app, measure it against the Spec's screen list. A step is not done until its "done when" line is shown as pass.
+Every sub-step follows the Constitution: after each working step, run all tests, show proof, commit and push; after each change to the app, measure it against the Spec's screen list. A stage is not done until its "done when" line is shown as pass.
 
-## Setup
-1. Start-of-build check: Python, Tk, venv, pip, git identity, GitHub login and SSH (`ssh -T git@github.com`), and this folder's repo; show pass/fail for each. Note: this folder currently sits inside the `~/Projects` repo (git reports that as its top level), so decide with the operator whether it gets its own repo. Done when: every line passes.
-2. Create `./.venv`, install requirements (`requests`, `Pillow`, `pytest`), write the environment steps to `docs/setup.md`, add `.gitignore`. Done when: `pytest` runs, with one trivial test, inside the venv.
-3. Early step: measure `screenshot.png` with a script and save the measurements to a file in this folder. All layout checks against the Spec's screen list use these measurements, not the approximate positions in the Spec. Done when: the file lists a measured position and size for each of the 19 screen-list elements.
+## Stage 1: Environment
+- 1.1 Start-of-build check: Python, Tk, venv, pip, git identity, GitHub login and SSH (`ssh -T git@github.com`), and this folder's repo; show pass/fail for each. (Repo root and `origin` jcarter-labs/RSGB-3 are already set up and pushed.)
+- 1.2 Create `./.venv`, install `requests`, `Pillow` and `pytest`, write the environment steps to `docs/setup.md`, add `.gitignore`; `pytest` runs with one trivial test.
+- 1.3 Measure `screenshot.png` with a script and save the measurements to a file in this folder. All layout checks against the Spec's screen list use these measurements, not the approximate positions in the Spec.
 
-## Live captures (close the "Open until a live session" table in Tech)
-4. Capture a live NC7J session: login prompt text, band filter command and its acknowledgement, and a raw capture of 50 lines or 5 minutes, saved to a file. Done when: each item is recorded in Tech with its capture file named.
-5. Capture one live POTA.app response, saved to a file. Done when: the endpoint and JSON fields are recorded in Tech with the file named.
+Done when: every check in 1.1 passes, `pytest` runs inside the venv, and the measurements file gives a measured position and size for each of the 19 screen-list elements.
 
-## Parsers, rules and logic (no window, no network; offline tests)
-6. `cluster_parse` with tests on the saved capture. Done when: accepted plus rejected equals lines read.
-7. `pota_parse` with tests on the saved response. Done when: accepted plus rejected equals records returned.
-8. `spot_filter` with tests (skimmer match, CW check, frequency range, POTA drops). Done when: the matching, non-matching and non-CW cases pass.
-9. `settings` with tests for valid and invalid entries. Done when: out-of-range and non-numeric frequencies are rejected and the old value kept.
-10. `spot_store` with tests on a fake clock. Done when: opacity is linear to 15%, spots drop past the window, counts and Clear are right.
-11. `layout` with tests (frequency to position, label spreading of at least one text height, no Tk import). Done when: tests pass, including a crowded-labels case; add any shortfall to the known limitations list.
+## Stage 2: Data connections
+- 2.1 Save a live NC7J session: login prompt text, band filter command and its acknowledgement, and a raw capture of 50 lines or 5 minutes.
+- 2.2 Save one live POTA.app response. Record both captures' findings in Tech's "Open until a live session" table, with the capture files named.
+- 2.3 `cluster_parse` and `pota_parse`, tested on the saved captures.
+- 2.4 `cluster_client` (socket worker thread, login, band filter, raw lines and status items on the queue, reconnect at 5, 10, 30 s then every 60 s).
+- 2.5 `pota_client` (60 s poll, raw records on the queue, a status item on failure with old spots kept).
+- 2.6 Test both clients against the live servers, including a forced disconnect and reconnect, a blocked network, and a POTA failure.
+- 2.7 A bare window showing live RBN and POTA spots as two plain text lists (call, freq, age), fed through the queue. No bandmap, no layout, no styling, no client-side filtering; each list keeps only its last 50 entries, and the server-side band filter stays on. The window's `after()` tick drains the queue with a small temporary drain, which `app` replaces in 3.5.
 
-## Network and wiring
-12. `cluster_client` against a fake local server: login, band filter, raw lines on the queue, reconnect at 5, 10, 30 s then 60 s, status items. Done when: the failure check (killed socket, blocked network) passes.
-13. `pota_client` with a faked HTTP layer: 60 s poll, raw records on the queue, a status item on failure with old spots kept. Done when: timeout, HTTP error and bad JSON cases pass and the poll age keeps growing on failure.
-14. `app`: `app.drain()` calls the parsers, filter and store and applies status items. Done when: queued items give the right store contents, counts and status.
+Done when: both captures are saved and the Tech table is closed, each parser's accepted plus rejected equals the items read, and both clients pass the live checks, including reconnect with the retry count, and the bare window shows live spots in both lists within 60 s of starting.
 
-## Window
-15. `ui` static layout with fake spots, built from the step 3 measurements. Done when: the measured layout is compared with the screenshot measurements and shown as pass/fail per screen-list element.
-16. Wire the controls to `settings` (Set, Bandwidth, Window, Spotter, Server, Clear), with the `after()` tick calling `app.drain()` then redraw. Done when: each control works and the window stays responsive.
-17. Connect live RBN spots to the left scale: blue call signs, leader lines, click to copy, cluster status dot and retry count. Done when: a live session shows spots and the clipboard holds exactly the clicked call sign.
-18. Connect live POTA spots to the right scale: green call signs, ticks only, "last poll Ns ago". Done when: a live poll shows spots and the counts match what is on screen.
-19. Fading and resizing: fade to 15% and drop at the window age; minimum size 400 x 700, layout scales above it. Done when: the fade values and the size checks pass by measurement.
+## Stage 3: Core logic (offline tests on the captures)
+- 3.1 `spot_filter` (skimmer match, client-side CW check, frequency range, POTA drops).
+- 3.2 `settings` (frequency, bandwidth, window, Local/Regional; bad entry rejected, old value kept).
+- 3.3 `spot_store` (age, linear opacity to 15%, drop past the window, counts, Clear), on a fake clock.
+- 3.4 `layout` (frequency to position, label spreading of at least one text height, no Tk import).
+- 3.5 `app` (`app.drain()` calls the parsers, filter and store and applies status items).
 
-## Finish
-20. Full check: the screen-list measurement, both source checks live, failure tests, and a responsiveness check. Update the known limitations list. Done when: every check shows pass, and any fail is fixed or listed.
-21. Working app: one documented launch command, `docs/setup.md` complete, final test run, commit and push. Done when: the app starts from a fresh clone following only `docs/setup.md`.
+Done when: all offline tests pass with no network and no window, including the matching, non-matching and non-CW cases, and a crowded-labels case for `layout`; any shortfall is added to the known limitations list.
+
+## Stage 4: Features
+- 4.1 Controls wired to `settings` (Set, Bandwidth, Window, Spotter, Server, Clear), driven by the single `after()` tick that calls `app.drain()` then redraws.
+- 4.2 Live RBN lane (left scale): blue call signs, leader lines, cluster status dot and retry count.
+- 4.3 Live POTA lane (right scale): green call signs, ticks only, "last poll Ns ago".
+- 4.4 Fading: to 15% over the window, dropped when older.
+- 4.5 Local/Regional tier switching.
+- 4.6 Click a call sign to copy it.
+
+Done when: against live data, each feature behaves as in Spec Features (frequency, bandwidth and window limits, fade values, counts matching what is on screen, exactly the clicked call sign on the clipboard) and the window stays responsive.
+
+## Stage 5: UI
+- 5.1 Layout compared with the stage 1 measurements, pass/fail per screen-list element.
+- 5.2 Resize: minimum 400 x 700, layout scales above it.
+- 5.3 Full screen-list check, both source checks live, failure tests, responsiveness check; update the known limitations list.
+- 5.4 One documented launch command, `docs/setup.md` complete, final test run, commit and push.
+
+Done when: every screen-list element passes by measurement, every check above passes or is listed as a known limitation, and the app starts from a fresh clone using only `docs/setup.md`.
