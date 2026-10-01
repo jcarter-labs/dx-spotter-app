@@ -1,14 +1,16 @@
 """One raw cluster line to a Spot or an explicit Reject.
 
 Format (operator's live session): ``DX de WA7LNW-#:  14020.0  XR4T  CW 13 dB 28 WPM CQ  0007Z``
-Frequency is in kHz; the mode is the first word after the call.
+Frequency is in kHz; the mode is the first word after the call, blank on human spots
+(captured: ``DX de KF6IWW:    14253.0  N7MES      0015Z``).
 """
 import math
 import re
 
 from .models import Reject, Spot
 
-_LINE = re.compile(r"^DX de (\S+?):\s+(\S+)\s+(\S+)\s+(\S+)(?:\s.*)?$")
+_LINE = re.compile(r"^DX de (\S+?):\s+(\S+)\s+(\S+)(?:\s+(\S+))?(?:\s.*)?$")
+_TIME = re.compile(r"^\d{4}Z$")
 
 
 def parse_line(line: str) -> Spot | Reject:
@@ -19,6 +21,8 @@ def parse_line(line: str) -> Spot | Reject:
     if not m:
         return Reject("malformed spot line", line)
     skimmer, raw_freq, call, mode = m.groups()
+    if mode is None or _TIME.match(mode):
+        mode = ""  # human spots carry no mode: "DX de KF6IWW:  14253.0  N7MES   0015Z"
     try:
         khz = float(raw_freq)
     except ValueError:

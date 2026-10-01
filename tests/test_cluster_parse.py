@@ -13,6 +13,7 @@ HAND = [
     "DX de W6YX-2:  14074.0  JA1XYZ  FT8 -5 dB  0011Z",
     "DX de KW7MM-2-#:  14045.5  W1AW  RTTY 18 dB 45 BPS CQ  0012Z",
 ]
+HUMAN = "DX de KF6IWW:    14253.0  N7MES                                       0015Z"  # from the live capture
 BAD = ["", "garbage", "DX de :", "DX de W6YX-#:  abc  K1ABC  CW", "DX de W6YX-#:  14020.0", "DX de W6YX-#:  -3  K1ABC  CW"]
 
 
@@ -28,6 +29,11 @@ def test_hand_made_lines():
     assert (a.call, a.mode, a.skimmer) == ("K1ABC/P", "CW", "AK6RI-1-#")
     assert (b.mode, b.skimmer) == ("FT8", "W6YX-2")
     assert c.mode == "RTTY"
+
+
+def test_human_spot_has_blank_mode():
+    s = parse_line(HUMAN)
+    assert (s.call, s.mode, s.skimmer) == ("N7MES", "", "KF6IWW")
 
 
 def test_rejects():
@@ -48,3 +54,5 @@ def test_saved_capture_accepted_plus_rejected_equals_lines():
     assert len(lines) >= 1
     assert sum(isinstance(r, Spot) for r in res) + sum(isinstance(r, Reject) for r in res) == len(lines)
     assert not any(isinstance(r, Reject) for r in res)
+    assert len(lines) >= 50
+    assert sum(s.mode == "CW" for s in res) == 49 and sum(s.mode == "" for s in res) == 2

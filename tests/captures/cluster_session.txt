@@ -1,0 +1,78 @@
+*** Connected to NC7J
+****************************************************************************
+ NC7J Utah DX Cluster / CW/RTTY Skimmer Server (AR-Cluster v6 Telnet Server)
+              Located in Syracuse Utah at the QTH of NG7M
+ 
+ CW Skimmer Server spots OFF by default, but can be turned ON with commands:
+ Manual at: http://www.nc7j.com/arcluster/arusermanual-6/
+****************************************************************************
+Enter your callsign
+
+login: Hello  N6YU
+Utah DX Cluster and CW/RTTY Skimmer Server
+NC7J AR-Cluster node version 6.6.92
+System Operator: Max NG7M
+
+*** TAKE NOTE! AR-Cluster 6 Commands ***
+To turn ON Skimmer Spots and ONLY Pass Spots from North America Enter:
+Set DX Filter Skimmer AND SpotterCont = NA
+
+To turn OFF Skimmer Spots and ONLY Pass Spots from North America Enter:
+Set DX Filter Not Skimmer AND SpotterCont = NA
+
+Manual at: http://www.nc7j.com/arcluster/arusermanual-6/
+N6YU de NC7J 01-Oct 0015Z arc6>
+
+<<SENT 'set dx filter Band=20'>>
+DX filter set to: Band = 20
+DX de CX6VM-#:   14058.1  WB3GXN       CW 9 dB 14 WPM CQ              0015Z
+DX de NU4F-#:    14059.5  W7DZ         CW 20 dB 23 WPM CQ             0015Z
+DX de KF6IWW:    14253.0  N7MES                                       0015Z
+DX de K2PO/7-#:  14064.0  KE9SA        CW 6 dB 20 WPM CQ              0015Z
+DX de W1NT-6-#:  14045.0  KW5CW        CW 12 dB 23 WPM CQ             0015Z
+DX de K5KHK-#:   14045.0  KW5CW        CW 10 dB 22 WPM CQ             0015Z
+DX de VE6JY-#:   14064.0  KE9SA        CW 9 dB 20 WPM CQ              0015Z
+DX de ND7K-#:    14064.0  KE9SA        CW 18 dB 20 WPM CQ             0015Z
+DX de KD7EFG-#:  14064.0  KE9SA        CW 27 dB 20 WPM CQ             0015Z
+DX de K3PA-1-#:  14020.0  XR4T         CW 23 dB 28 WPM CQ             0015Z
+DX de N2EPE-#:   14059.5  W7DG         CW 2 dB 23 WPM CQ              0015Z
+DX de WA7LNW-#:  14064.0  KE9SA        CW 13 dB 20 WPM CQ             0015Z
+DX de KW7MM-4-#: 14064.2  KE9SA        CW 24 dB 20 WPM CQ             0015Z
+DX de K5TR-#:    14064.0  KE9SA        CW 17 dB 20 WPM CQ             0016Z
+DX de KW7MM-#:   14064.0  KE9SA        CW 26 dB 20 WPM CQ             0016Z
+DX de K9IMM-#:   14020.0  XR4T         CW 22 dB 28 WPM CQ             0016Z
+DX de K3PA-1-#:  14069.0  VE2YOW       CW 7 dB 15 WPM CQ              0016Z
+DX de W5ZN-#:    14069.0  VE2YOW       CW 12 dB 14 WPM CQ             0016Z
+DX de BG7IEJ-#:  14023.0  BD8BIZ       CW 28 dB 17 WPM CQ             0016Z
+DX de BH4XDZ-#:  14023.0  BD8BIZ       CW 15 dB 17 WPM CQ             0016Z
+DX de K3CAR:     14255.0  CO3JAC                                      0016Z
+DX de K5KHK-#:   14039.0  N7WPO        CW 26 dB 21 WPM CQ             0016Z
+DX de BH4RRG-#:  14023.0  BD8BIZ       CW 12 dB 16 WPM CQ             0016Z
+DX de BD4UNT-#:  14023.0  BD8BIZ       CW 10 dB 17 WPM CQ             0016Z
+DX de NG7M-#:    14005.0  K4JJW        CW 16 dB 24 WPM CQ             0016Z
+DX de BA4OP-#:   14023.0  BD8BIZ       CW 25 dB 17 WPM CQ             0016Z
+DX de NG7M-#:    14045.0  KW5CW        CW 15 dB 23 WPM CQ             0016Z
+DX de WB6BEE-#:  14005.0  K4JJW        CW 6 dB 24 WPM CQ              0016Z
+DX de ND7K-#:    14005.0  K4JJW        CW 23 dB 24 WPM CQ             0016Z
+DX de AC0C-1-#:  14005.0  K4JJW        CW 38 dB 24 WPM CQ             0016Z
+DX de VE6WZ-#:   14005.0  K4JJW        CW 7 dB 24 WPM CQ              0016Z
+DX de K3PA-1-#:  14005.0  K4JJW        CW 22 dB 24 WPM CQ             0016Z
+DX de WA7LNW-#:  14005.0  K4JJW        CW 26 dB 24 WPM CQ             0016Z
+DX de K5TR-#:    14005.0  K4JJW        CW 16 dB 24 WPM CQ             0016Z
+DX de KW7MM-#:   14005.0  K4JJW        CW 22 dB 24 WPM CQ             0016Z
+DX de KW7MM-#:   14054.0  K0RQ         CW 28 dB 20 WPM CQ             0016Z
+DX de K2PO/7-#:  14005.0  K4JJW        CW 17 dB 23 WPM CQ             0016Z
+DX de K9IMM-#:   14005.0  K4JJW        CW 27 dB 23 WPM CQ             0016Z
+DX de W1NT-6-#:  14059.5  W7DZ         CW 3 dB 23 WPM CQ              0016Z
+DX de W6YX-#:    14005.0  K4JJW        CW 16 dB 24 WPM CQ             0016Z
+DX de K1RA-4-#:  14054.0  K0RQ         CW 23 dB 20 WPM CQ             0016Z
+DX de VE6JY-#:   14005.0  K4JJW        CW 8 dB 24 WPM CQ              0016Z
+DX de KM7W-#:    14007.0  NA2DX        CW 2 dB 25 WPM CQ              0016Z
+DX de KW7MM-4-#: 14005.2  K4JJW        CW 13 dB 24 WPM CQ             0016Z
+DX de AK6RI-1-#: 14005.0  K4JJW        CW 5 dB 23 WPM CQ              0016Z
+DX de K6FOD-#:   14005.0  K4JJW        CW 13 dB 23 WPM CQ             0016Z
+DX de 5Z4GO-#:   14005.0  K4JJW        CW 13 dB 23 WPM CQ             0016Z
+DX de AC0C-1-#:  14039.0  WA6MOW       CW 26 dB 22 WPM CQ             0016Z
+DX de N6TV-#:    14005.0  K4JJW        CW 9 dB 24 WPM CQ              0017Z
+DX de KM7W-#:    14005.0  K4JJW        CW 10 dB 23 WPM CQ             0017Z
+DX de KD7EFG-#:  14005.0  K4JJW        CW 34 dB 24 WPM CQ             0017Z
