@@ -41,3 +41,9 @@ def test_band_of_edges_and_gaps():
     assert band_of(14.045) == 20 and band_of(14.000) == 20 and band_of(14.350) == 20
     assert band_of(7.0) == 40 and band_of(7.3) == 40 and band_of(1.8) == 160 and band_of(29.7) == 10
     assert band_of(5.35) is None and band_of(14.351) is None and band_of(13.999) is None and band_of(3.0) is None
+
+
+def test_band_table_matches_us_part_97_edges_confirmed_by_operator():
+    from spotter.settings import HF_BANDS
+    assert HF_BANDS == {160: (1.8, 2.0), 80: (3.5, 4.0), 40: (7.0, 7.3), 30: (10.1, 10.15), 20: (14.0, 14.35),
+                        17: (18.068, 18.168), 15: (21.0, 21.45), 12: (24.89, 24.99), 10: (28.0, 29.7)}

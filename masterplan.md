@@ -9,7 +9,7 @@ RULE: Measure UI layout with pixels against reference measurements; never claim 
 RULE: Keep the app responsive while it works, never stuck waiting on data or input.
 RULE: Keep a short list of known limitations in the masterplan; update it as we go.
 RULE: Run each stage without stopping; stop for my review only at stage end, on a failed test, or when you need my decision.
-RULE: Test connections to outside data with real servers before building screens that depend on them.
+RULE: Test connections to outside data with real servers before building screens that depend on them. Live network checks need unsandboxed network access for the agent: ask for it at the start of Stage 2.
 RULE: Get a simple version running early, then add features one at a time, testing each.
 
 # Spec
@@ -17,7 +17,7 @@ RULE: Get a simple version running early, then add features one at a time, testi
 ## Summary
 DX Spotter ("RBN & POTA Spotter"): a macOS graphical bandmap for a CW/DX operator, modelled on the N1MM bandmap (the example app).
 - RBN CW spots from the NC7J AR-Cluster (telnet nc7j.com:7373, login N6YU), limited to the Local or Regional skimmers, are drawn on a vertical linear frequency scale, each call sign on a leader line to its frequency.
-- POTA.app spots (polled every minute) are on a second scale at the right. RBN is blue, POTA green.
+- POTA.app spots (polled every minute) are on a second scale at the right. RBN is blue, POTA green (the reference screenshot draws POTA dark blue; the Spec's green is followed).
 - Spots fade over a 5, 10 or 15 min fade time. Clicking a call sign copies it to the clipboard.
 - A side panel holds the controls and status. The app window is resizable.
 
@@ -61,7 +61,7 @@ Two sources feed the app; everything else comes from the operator's controls. Pa
 
 ### Source A: NC7J AR-Cluster (RBN spots)
 - Telnet `nc7j.com` port 7373, login N6YU. Feeds the left scale: CW only, call only, from the selected skimmer list.
-- Line format (confirm from a live capture, not assumed): `DX de <skimmer>: <freq kHz> <call> CW ...`.
+- Line format (confirmed from the live capture): `DX de <skimmer>: <freq kHz> <call> CW ...`. Human (non-skimmer) spots have no mode field, e.g. `DX de KF6IWW:  14253.0  N7MES   0015Z`; the parser gives them a blank mode, so they are not CW and are dropped.
 - Skimmer match: the line's skimmer equals a list entry, optionally followed by `-<digits>`, then optionally `-#` (live skimmers end in `-#` or `-<n>-#`). AK6RI-1 matches AK6RI-1-# and AK6RI-1-2, not AK6RI-10 or AK6RI. A bare entry matches itself: W6YX matches W6YX, W6YX-#, W6YX-2 and W6YX-2-#. The Regional list stays as written, including KW7MM-2, with the Local skimmers added when Regional is selected.
 - CW check: the client-side check is authoritative; server-side mode filtering is not trusted.
 - Checks:
@@ -88,7 +88,7 @@ Two sources feed the app; everything else comes from the operator's controls. Pa
 ## Screen list
 Source: `screenshot.png` (492 x 1189 px, Linux window; macOS native chrome replaces the title bar). Positions are x, y in screenshot pixels, read by eye, not measured, and approximate.
 
-Check rule: layout checks use the step 1.3 measurements, not the approximate numbers below. An element passes when its measured position is within ±4 px of the measurement. Checks run on the content area at the reference width (492 px) and the screenshot's height minus its title bar (measured in 1.3); the title bar (element 1) is excluded and y values are taken from the top of the content area. Colours stay light whatever the macOS appearance: white canvas, light grey panel.
+Check rule: layout checks use the step 1.3 measurements, not the approximate numbers below. An element passes when its measured position is within ±4 px of the measurement. Checks run on the content area at the reference width (492 px) and the screenshot's height minus its title bar (measured in 1.3); the title bar (element 1) is excluded and y values are taken from the top of the content area. Colours stay light whatever the macOS appearance: white canvas, light grey panel. macOS captures are colour-managed (panel grey 217 reads as 212), so layout checks compare positions only, never colours; the right edge of the Shown line (19) is not compared, since its width depends on the counts.
 
 App window
 1. Title bar "DX Spotter", centred; window buttons top right (y ~20). Replaced by macOS chrome.
@@ -122,11 +122,13 @@ Right area: control panel, light grey, x ~298 to 492, left-aligned at x ~312
 |---|---|---|
 | Platform | macOS only | Confirmed by the operator; "my platforms" in the Constitution means macOS. |
 | Language | Python 3.13 or later (python.org or Homebrew, never `/usr/bin/python3`) with Tk 8.6 or 9.x, venv at `./.venv` | The system Python's Tk is too old. |
-| GUI | Tkinter (ttk widgets, Canvas for the bandmap) | The screenshot looks like a Tk app; ships with Python; Canvas suits scales, leader lines and click-to-copy. Fading blends the text colour toward the white background, since Tk has no text transparency. Light colours are forced whatever the macOS appearance. |
+| GUI | Tkinter (ttk widgets, Canvas for the bandmap) | The screenshot looks like a Tk app; ships with Python; Canvas suits scales, leader lines and click-to-copy. Fading blends the text colour toward the white background, since Tk has no text transparency. Light colours are forced whatever the macOS appearance. Fonts matched to the reference text widths: Lucida Grande 10 for labels, Arial 10 for status text and call signs, Arial 9 bold for tick labels, Lucida Grande 16 bold for the heading. |
 | Cluster link | Standard-library `socket` in a worker thread, spots passed to the GUI through a queue | No extra package; fits Tk's event loop. `telnetlib` is not used (removed in Python 3.13). |
 | POTA HTTP | `requests`, polled every 60 s in a worker thread | Simple timeouts and error handling. |
 | Screenshot measuring | Pillow | Reads `screenshot.png` pixels (step 1.3) and for layout checks. |
 | Tests | pytest | Offline parser and filter tests on saved captures. |
+
+Window testing: Tk only paints inside `mainloop()`, and calling `lift()` before it gives blank captures; capture with `screencapture -R` from the window's Tk geometry (Screen Recording allowed for the terminal, terminal restarted). Do not run UI tests while a capture is running, since a test window can cover the app.
 
 ## Modules
 Each module has one job and is testable on its own. Only `ui` imports Tk.
@@ -165,7 +167,7 @@ Standard US amateur bands, edges inclusive, in MHz. A frequency in a gap or outs
 | 12 m | 24.890 | 24.990 |
 | 10 m | 28.000 | 29.700 |
 
-Edges are the standard US allocations written from knowledge, not from a captured source; check them once before the build relies on them.
+Edges are the US allocations (FCC Part 97), confirmed by the operator against a published table (2026-09-30); the code table matches it exactly. The app uses the US edges; IARU Region 1 differs on 160 m (1.810 to 2.000), 80 m (to 3.800) and 40 m (to 7.200) and is not used.
 
 ## Known limitations
 1. When more spots are crowded together than fit on the canvas, labels are clamped inside it and may overlap.
@@ -173,7 +175,6 @@ Edges are the standard US allocations written from knowledge, not from a capture
 3. Live 20 m RBN traffic from the listed skimmers is light (about one spot a minute), so full-age fading and Local/Regional switching with many spots are verified by offline fake-clock and canned-capture tests, and live only on a few spots.
 4. "Window stays draggable" is checked by replaying 50 spots/s while resizing the window from code (worst tick lateness 10 ms), not by a real mouse drag.
 5. macOS screen captures are colour-managed (panel grey 217 reads as 212), so the layout check compares positions, never colours. The Shown line's right edge is not compared, since its width depends on the counts.
-6. The US band edges in the Tech table were written from knowledge and not checked against a source (the table's own note asks for one check).
 
 ## Open until a live session
 Each item stays open until taken from a saved live capture, never from memory; name the capture file next to the item when closed.
@@ -202,7 +203,7 @@ Done when: every check in 1.1 passes, `pytest` runs inside the venv, and the mea
 - 2.4 `cluster_client` (login, band filter, raw lines and status items on the queue, reconnect at 5, 10, 30 s then every 60 s).
 - 2.5 `pota_client` (60 s poll, raw records on the queue, a status item on failure with old spots kept).
 - 2.6 Test both clients against the live servers, including a forced disconnect and reconnect, a blocked network, and a POTA failure.
-- 2.7 A bare window showing live RBN and POTA spots as two plain text lists (call, freq, age), fed through the queue. No bandmap, layout or styling, and no client-side filtering; each list keeps only its last 50 entries. The server-side band filter stays on, requesting only 20 m (the band containing the default frequency). Depends on 2.1 confirming the filter command; if it cannot, 2.7 drops off-band spots client-side and logs "server filter unconfirmed" until fixed. The window's `after()` tick uses a small temporary drain, which `app` replaces in 3.5.
+- 2.7 A bare window showing live RBN and POTA spots as two plain text lists (call, freq, age), fed through the queue. No bandmap, layout or styling, and no client-side filtering; each list keeps only its last 50 entries. The server-side band filter stays on, requesting only 20 m (the band containing the default frequency). Depends on 2.1 confirming the filter command; if it cannot, 2.7 drops off-band spots client-side and logs "server filter unconfirmed" until fixed. The window's `after()` tick uses a small temporary drain, which `app` replaces in 3.5. (Done in Stage 2 as `spotter/bare_window.py`; superseded by the real window in Stage 4.)
 
 Done when: both captures are saved and the Tech table is closed, each parser's accepted plus rejected equals the items read, both clients pass the live checks including reconnect with the retry count, and the bare window shows live spots in both lists within 60 s of starting.
 
