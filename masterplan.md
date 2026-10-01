@@ -169,6 +169,11 @@ Edges are the standard US allocations written from knowledge, not from a capture
 
 ## Known limitations
 1. When more spots are crowded together than fit on the canvas, labels are clamped inside it and may overlap.
+2. At the minimum window width (400 px) the canvas is 207 px wide, so an RBN label and a POTA label at nearly the same frequency can touch.
+3. Live 20 m RBN traffic from the listed skimmers is light (about one spot a minute), so full-age fading and Local/Regional switching with many spots are verified by offline fake-clock and canned-capture tests, and live only on a few spots.
+4. "Window stays draggable" is checked by replaying 50 spots/s while resizing the window from code (worst tick lateness 10 ms), not by a real mouse drag.
+5. macOS screen captures are colour-managed (panel grey 217 reads as 212), so the layout check compares positions, never colours. The Shown line's right edge is not compared, since its width depends on the counts.
+6. The US band edges in the Tech table were written from knowledge and not checked against a source (the table's own note asks for one check).
 
 ## Open until a live session
 Each item stays open until taken from a saved live capture, never from memory; name the capture file next to the item when closed.

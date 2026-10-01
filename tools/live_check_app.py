@@ -101,14 +101,14 @@ def band_change():
     check("band change: filter 40 sent, old-band spots flushed", app.filter_band == 40 and app.store.count("rbn") == 0)
 
 
-@at(75)
+@at(130)
 def band_after():
     check("band change: 40 m filter acknowledged by the server", cluster.filter_acked_band == 40)
     stored = [sp for sp, _ in app.store.items("rbn", app.settings.fade)]
     check("band change: only 7.0-7.3 MHz spots after", len(stored) > 0 and all(7.0 <= sp.freq_mhz <= 7.3 for sp in stored), f"({len(stored)} spots)")
 
 
-@at(76)
+@at(131)
 def clear_now():
     ui.clear_btn.invoke(); root.update()
     v = app.view()
@@ -116,7 +116,7 @@ def clear_now():
     check("Clear: forced reconnect shows amber, not a retry", v.dot == "amber" and v.cluster_text == "Cluster: NC7J")
 
 
-@at(100)
+@at(160)
 def after_clear():
     v = app.view()
     check("Clear: cluster reconnects (green) with the filter re-acked; new spots continue",
