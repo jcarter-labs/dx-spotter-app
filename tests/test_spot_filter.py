@@ -41,3 +41,9 @@ def test_span():
     assert in_span(14.020, 14.045, 50) and in_span(14.070, 14.045, 50) and in_span(14.045, 14.045, 50)
     assert not in_span(14.0199, 14.045, 50) and not in_span(14.0701, 14.045, 50)
     assert in_span(14.025, 14.045, 10) is False and in_span(14.040, 14.045, 10)
+
+
+def test_regional_is_superset_of_local():
+    from spotter.spot_filter import SKIMMER_LISTS
+    assert set(LOCAL) < set(SKIMMER_LISTS["Regional"]) and set(REGIONAL) < set(SKIMMER_LISTS["Regional"])
+    assert SKIMMER_LISTS["Local"] == LOCAL

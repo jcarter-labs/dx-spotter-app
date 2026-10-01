@@ -29,7 +29,7 @@ def line(skim, f, call, mode="CW"):
 def test_rbn_filtering_and_one_label_per_call():
     app, q, c, _ = mk()
     for it in [line("WA7LNW-#", 14030.0, "K1AAA"),            # kept (Regional)
-               line("W6YX-#", 14031.0, "K1BBB"),               # Local skimmer: stored, not drawn under Regional
+               line("W6YX-#", 14031.0, "K1BBB"),               # Local skimmer: shown under Regional too
                line("WA7LNW-#", 14032.0, "K1CCC", "RTTY"),     # non-CW: dropped
                line("WA7LNW-#", 14090.0, "K1DDD"),             # stored, outside span: not drawn
                line("WA7LNW-#", 7030.0, "K1EEE"),              # other band: dropped
@@ -38,20 +38,20 @@ def test_rbn_filtering_and_one_label_per_call():
         q.put(it)
     app.drain()
     v = app.view()
-    assert {(d.call, round(d.freq_mhz, 3)) for d in v.rbn} == {("K1AAA", 14.040)}
+    assert {(d.call, round(d.freq_mhz, 3)) for d in v.rbn} == {("K1AAA", 14.040), ("K1BBB", 14.031)}
     assert app.store.count("rbn") == 3 and app.rejected == 1
-    assert v.shown_text == "Shown: RBN 1 · POTA 0"
+    assert v.shown_text == "Shown: RBN 2 · POTA 0"
 
 
 def test_local_regional_switching_redraws_without_emptying():
     app, q, c, _ = mk()
     q.put(line("W6YX-#", 14031.0, "K1BBB")); q.put(line("WA7LNW-#", 14032.0, "K1CCC")); app.drain()
-    assert [d.call for d in app.view().rbn] == ["K1CCC"]            # Regional (default)
+    assert {d.call for d in app.view().rbn} == {"K1BBB", "K1CCC"}   # Regional shows Regional + Local
     app.set_spotter("Local")
     assert [d.call for d in app.view().rbn] == ["K1BBB"] and app.store.count("rbn") == 2   # nothing lost
     app.set_spotter("Regional")
-    assert [d.call for d in app.view().rbn] == ["K1CCC"]
-    assert app.view().shown_text == "Shown: RBN 1 · POTA 0"
+    assert {d.call for d in app.view().rbn} == {"K1BBB", "K1CCC"}
+    assert app.view().shown_text == "Shown: RBN 2 · POTA 0"
 
 
 def test_pota_records_filter_and_counts_and_poll_age():
