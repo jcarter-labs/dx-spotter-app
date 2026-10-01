@@ -76,7 +76,7 @@ class App:
             return
         if band_of(s.freq_mhz) != self.filter_band:
             return  # a spot from a band we no longer ask for (arrived around a band change)
-        if spot_filter.keep_rbn(s, spot_filter.SKIMMER_LISTS[self.settings.spotter]):
+        if spot_filter.keep_rbn(s, spot_filter.ALL_SKIMMERS):
             self.store.add("rbn", s)
 
     def _pota_records(self, item):
@@ -119,11 +119,7 @@ class App:
         return self.settings.set_fade(v)  # applies to all existing spots at the next view
 
     def set_spotter(self, v) -> tuple[bool, str]:
-        old = self.settings.spotter
-        ok, msg = self.settings.set_spotter(v)
-        if ok and v != old:
-            self.store.clear("rbn")  # the store holds only the selected list's spots
-        return ok, msg
+        return self.settings.set_spotter(v)  # applies at draw time; the store is untouched
 
     def clear(self) -> None:
         self.store.clear()
@@ -137,6 +133,8 @@ class App:
         v = View(lo=lo, hi=hi, warning=self.warning)
         for scale, out in (("rbn", v.rbn), ("pota", v.pota)):
             for sp, op in self.store.items(scale, s.fade):
+                if scale == "rbn" and not spot_filter.skimmer_matches(sp.skimmer, spot_filter.SKIMMER_LISTS[s.spotter]):
+                    continue
                 if spot_filter.in_span(sp.freq_mhz, s.frequency, s.bandwidth):
                     out.append(DrawSpot(sp.call, sp.freq_mhz, op))
         v.dot = DOT.get(self.cluster_state, "amber")

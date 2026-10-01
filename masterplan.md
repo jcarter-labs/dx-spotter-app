@@ -38,7 +38,7 @@ Terms: **fade time** = the "Window (min)" setting (that is only its on-screen la
 4. **Click a call sign to copy it** (either scale). No feedback is specified.
    - Test: the clipboard holds exactly that call sign as spotted, including any suffix such as /P (no frequency, no extra text).
 5. **Spot fading**: Window (min) menu sets the fade time. A spot is solid when new, grows more transparent with age, is at 15% opacity just before the fade time, and is dropped at age ≥ fade time. Changing the setting applies to all existing spots at once.
-   - Test: menu is exactly 5, 10, 15 min; opaque at age 0; transparency rises with age; 15% just before the fade time; dropped at age = fade time (10 min at the default, 15 at 15); "Shown" counts drop when a spot goes. Clear empties both scales at once; new spots continue to arrive.
+   - Test: menu is exactly 5, 10, 15 min; opaque at age 0; transparency rises with age; 15% just before the fade time; dropped at age = fade time (10 min at the default, 15 at 15); "Shown" counts drop when a spot goes. Clear empties both scales at once; new spots continue to arrive. Switching Local/Regional redraws from the store without emptying it.
 6. **POTA spots, right-hand scale**: ticks only, green call signs (call only) on leader lines, from the POTA.app API. Same span and fade time as RBN. The list of POTA spots is also deduplicated to one label per call.
    - Test: polled every 60 s; "POTA: last poll Ns ago" counts up and resets after each successful poll, and reads "POTA: not polled yet" until the first one; "Shown: ... POTA n" matches the POTA spots on screen.
 7. **Resizable app window** (drag the edges); the layout follows.
@@ -49,9 +49,10 @@ Terms: **fade time** = the "Window (min)" setting (that is only its on-screen la
 2. Fade: linear from full opacity to 15% over the selected fade time (5, 10 or 15 min, default 10); never fully invisible; 15% just before the fade time, then drop the spot at age ≥ fade time.
 3. Minimum app window size: 400 x 700 px; layout scales above that; the screenshot (492 x 1189) is the reference.
 4. Overlapping calls: at least one text height between labels; push crowded labels apart with a thin leader line to the true frequency. Labels are clamped inside the canvas; beyond that, overlap is allowed (see Known limitations).
-5. POTA: CW only; drop spots with no frequency. The store keeps every CW POTA spot with a frequency, and only spots inside the span are drawn (span filter at draw time, so a frequency change needs no new poll).
-6. Store: RBN spots keep the same rule: the store holds current-band CW spots from the selected list and the span filter applies only when drawing, so changing frequency within a band loses nothing.
+5. POTA: CW only; drop spots with no frequency. The store keeps every CW POTA spot with a frequency, and only spots inside the span are drawn (span filter at draw time, so a frequency change needs no new poll). Each poll re-lists current reports, so a report seen again (same POTA `spotId`) keeps its original age; a new report from the same call replaces the old one with age reset.
+6. Store: RBN spots keep the same rule: the store holds current-band CW spots from the Local and Regional lists together (every listed skimmer), and the span filter and the Local/Regional choice both apply only when drawing, so changing frequency within a band or switching Local/Regional loses nothing and redraws at once. (The two lists share no skimmers, so the store holds their union.)
 7. Clear: empties both scales, forces a cluster reconnect (shown as amber, not counted as a retry), and resends the current band filter. Server menu: only NC7J, does nothing else this iteration.
+8. Late old-band spots: an RBN spot from a band other than the one the server filter asks for is dropped on arrival, so stragglers around a band change never reappear.
 
 Side panel status lines: green dot and "Cluster: NC7J" (plus " (retry n)" while retrying); "POTA: last poll Ns ago" ("POTA: not polled yet" before the first successful poll); "Shown: RBN n · POTA n", counting the spots currently drawn.
 
@@ -61,7 +62,7 @@ Two sources feed the app; everything else comes from the operator's controls. Pa
 ### Source A: NC7J AR-Cluster (RBN spots)
 - Telnet `nc7j.com` port 7373, login N6YU. Feeds the left scale: CW only, call only, from the selected skimmer list.
 - Line format (confirm from a live capture, not assumed): `DX de <skimmer>: <freq kHz> <call> CW ...`.
-- Skimmer match: the line's skimmer equals a list entry, optionally followed by a trailing `-<digits>` or `-#`. AK6RI-1 matches AK6RI-1-# and AK6RI-1-2, not AK6RI-10 or AK6RI. A bare entry matches itself: W6YX matches W6YX, W6YX-# and W6YX-2. The Regional list stays as written, including KW7MM-2.
+- Skimmer match: the line's skimmer equals a list entry, optionally followed by `-<digits>`, then optionally `-#` (live skimmers end in `-#` or `-<n>-#`). AK6RI-1 matches AK6RI-1-# and AK6RI-1-2, not AK6RI-10 or AK6RI. A bare entry matches itself: W6YX matches W6YX, W6YX-#, W6YX-2 and W6YX-2-#. The Regional list stays as written, including KW7MM-2.
 - CW check: the client-side check is authoritative; server-side mode filtering is not trusted.
 - Checks:
   1. Connect: login succeeds within 10 s, meaning the server's post-login prompt (text recorded in step 2.1) is seen, and the dot goes green. Save a raw capture in this folder, before any filtering, of 50 spot lines or 5 minutes, whichever comes first.
@@ -138,8 +139,8 @@ Rules between modules:
 
 1. `cluster_parse`: one raw cluster line to a spot (frequency, call, mode, skimmer) or an explicit reject. Tested on the saved cluster capture.
 2. `pota_parse`: one raw POTA record to a spot (frequency, call, mode) or an explicit reject. Tested on the saved POTA response.
-3. `spot_filter`: decides if a spot is kept and drawn (skimmer match, client-side CW check, frequency inside the span at draw time, POTA drops). Tested with the match and CW cases from Data sources.
-4. `spot_store`: holds spots with age, gives opacity (linear to 15%), drops spots at age ≥ fade time (age from receipt), keeps one spot per call per scale, counts per source, clears. Tested with a fake clock.
+3. `spot_filter`: decides if a spot is kept and drawn (skimmer match, client-side CW check, frequency inside the span and the selected Local/Regional list at draw time, POTA drops). Tested with the match and CW cases from Data sources.
+4. `spot_store`: holds spots with age, gives opacity (linear to 15%), drops spots at age ≥ fade time (age from receipt), keeps one spot per call per scale (a repeated POTA report keeps its age), counts per source, clears. Tested with a fake clock.
 5. `settings`: holds and validates frequency (1.8 to 30 MHz), bandwidth (10, 20, 40, 50, 80, 100), fade time (5, 10, 15) and Local/Regional; a bad entry is rejected and the old value kept. Tested with valid and invalid inputs.
 6. `layout`: frequency to vertical position, and spreading crowded labels (at least one text height) while keeping each leader line's true frequency. Tested with numbers only.
 7. `cluster_client`: socket worker thread that logs in, sends the band filter, puts raw lines on the queue, reconnects with backoff, and reports state and retry count as status items. Tested against a fake local server.

@@ -6,6 +6,7 @@ from .models import Spot
 LOCAL = ("W6YX", "AK6RI-1", "N6TV")
 REGIONAL = ("K6FOD", "WA7LNW", "ND7K", "K7CO", "NG7M", "N7VVX", "N7TUG", "KD7EFG", "KW7MM", "KW7MM-2")
 SKIMMER_LISTS = {"Local": LOCAL, "Regional": REGIONAL}
+ALL_SKIMMERS = LOCAL + REGIONAL  # the store keeps spots from both lists; the choice applies at draw time
 
 
 def skimmer_matches(skimmer: str | None, entries) -> bool:
