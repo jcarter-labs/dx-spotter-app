@@ -66,8 +66,8 @@ Two sources feed the app; everything else comes from the operator's controls. Pa
 - CW check: the client-side check is authoritative; server-side mode filtering is not trusted.
 - Checks:
   1. Connect: login succeeds within 10 s, meaning the server's post-login prompt (text recorded in step 2.1) is seen, and the dot goes green. Save a raw capture in this folder, before any filtering, of 50 spot lines or 5 minutes, whichever comes first.
-  1a. Band filter: after login, the server-side band filter command is sent and acknowledged. Command and acknowledgement text stay open until a live session (see Tech). The filter asks for the band containing the current frequency (20 m at the default). After every reconnect the filter for the current band is sent again.
-  1b. Band change: on a frequency in a different HF amateur band (Tech table), the `cluster_client` worker thread clears the old server filter, sends the new band filter, and the old-band spots are flushed. A frequency outside any HF amateur band shows a warning and keeps the last filter. Tested live by changing bands: the new band's spots arrive and the old band's are gone.
+  1a. Band filter: after login, the server-side band filter command `set dx filter Band=<n>` is sent and acknowledged by the reply `DX filter set to: Band = <n>` (matched case-insensitively; see Tech). The filter asks for the band containing the current frequency (20 m at the default). After every reconnect the filter for the current band is sent again.
+  1b. Band change: on a frequency in a different HF amateur band (Tech table), the `cluster_client` worker thread sends the new band filter, which replaces the old one (each `set dx filter` replaces the whole filter), and the old-band spots are flushed. A frequency outside any HF amateur band shows a warning and keeps the last filter. Tested live by changing bands: the new band's spots arrive and the old band's are gone.
   1c. Clear: the Clear button empties both scales, forces a reconnect (amber, not counted as a retry) and resends the current band filter; the new filter is acknowledged.
   2. Parse: every captured line gives frequency (kHz to MHz), call, mode and skimmer, or an explicit reject. Accepted plus rejected equals lines read.
   3. Filter: only CW lines from the selected list are shown, per the skimmer match and CW check; Local/Regional switching changes the set. The capture must include a matching suffix, a non-matching suffix and a non-CW line; if the 5-minute capture has none, add hand-made lines marked as such.
@@ -150,7 +150,9 @@ Rules between modules:
 9. `app` (approved): `app.drain()` empties the queue, calls the parsers, filter and store, applies status items (dot, retry count, poll age), and gives `ui` what to draw. No Tk, no sockets. Tested by feeding it queued items and checking store and status.
 10. `ui`: Tkinter window, canvas and side panel; draws and passes user input on, never waits on data. Tested by measuring its screenshot against the saved measurements.
 
-The step 1.3 measuring script is a separate tool, not part of the app.
+Also in `spotter/` (not in the numbered list): `models` (the shared `Spot`, `Reject`, `RawLine`, `RawRecords` and `Status` types), `main` (launch: `python -m spotter`) and `bare_window` (the Stage 2 two-list window, superseded by `ui`).
+
+Tools in `tools/`, separate from the app: `measure_screenshot.py` (step 1.3 measurements), `capture_window.py` and `snap_app.py` (window capture), `verify_layout.py` (±4 px layout check), `probe_cluster.py` (live cluster capture), and the live checks `live_check_cluster.py`, `live_check_app.py` and `live_snap.py`.
 
 ## HF amateur bands (for the band filter)
 Standard US amateur bands, edges inclusive, in MHz. A frequency in a gap or outside the table is "outside any HF amateur band". 60 m is not listed, so it counts as outside.
