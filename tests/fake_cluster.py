@@ -15,6 +15,7 @@ class FakeCluster:
         self.port = self.srv.getsockname()[1]
         self.commands = []   # every command received, across logins
         self.logins = 0
+        self.disconnects = 0
         self.conns = []
         self._stop = False
         threading.Thread(target=self._accept, daemon=True).start()
@@ -51,6 +52,7 @@ class FakeCluster:
                         c.sendall(f"\r\nDX filter set to: Band = {m.group(1)}\r\nN6YU de NC7J 30-Sep 0007Z arc6>".encode())
                 d = c.recv(1024)
                 if not d:
+                    self.disconnects += 1
                     return
                 buf += d
         except OSError:
