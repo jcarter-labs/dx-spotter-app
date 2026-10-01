@@ -174,7 +174,7 @@ Each item stays open until taken from a saved live capture, never from memory; n
 
 | Open item | Closed by |
 |---|---|
-| POTA.app endpoint and JSON fields | Saved response from a live request |
+| POTA.app endpoint and JSON fields | **Closed** by `captures/pota_spots_raw.json` (+ `pota_headers.txt`), 2026-09-30: `GET https://api.pota.app/spot/activator` returns a JSON list (59 spots). Call = `activator`; `frequency` = string in kHz (e.g. "14075.63"); `mode` = string, "CW" for CW (some are ""); also `reference`, `spotTime`, `spotter`, `source`. |
 | Server-side band filter command and its acknowledgement | Saved live cluster session |
 | Login prompt text | Saved live cluster session |
 | Real spot-line format | Saved live cluster session (raw capture, before filtering) |
