@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageChops
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -21,7 +21,8 @@ def test_reference_passes_against_itself(tmp_path, capsys):
 
 def test_shifted_layout_fails(tmp_path, capsys):
     im = ref_content()
-    shifted = ImageChops.offset(im, 0, 10)   # everything 10 px lower
+    shifted = Image.new("RGB", im.size, (217, 217, 217))
+    shifted.paste(im, (0, 10))               # everything 10 px lower
     p = tmp_path / "shift.png"
     shifted.save(p)
     assert verify_layout.main(str(p)) == 1

@@ -69,7 +69,12 @@ def main(path):
     content = Image.open(path).convert("RGB")
     want = tuple(ref["_reference"]["content_size"])
     size_ok = content.size == want
-    got = measure(pad_with_title_bar(content, ref["_reference"]["title_bar_height"]))
+    try:
+        got = measure(pad_with_title_bar(content, ref["_reference"]["title_bar_height"]))
+    except Exception as e:  # layout too different to even measure
+        print(f"content size {content.size}, reference {want}: {'PASS' if size_ok else 'FAIL'}")
+        print(f"FAIL: could not measure the capture ({e!r})")
+        return 1
     rows = compare(ref, got)
     fails = [r for r in rows if not r[5]]
     print(f"content size {content.size}, reference {want}: {'PASS' if size_ok else 'FAIL'}")
