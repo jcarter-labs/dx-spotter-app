@@ -53,3 +53,48 @@ def test_no_tk_import():
     names = {n.names[0].name for n in ast.walk(ast.parse(src)) if isinstance(n, ast.Import)}
     froms = {n.module for n in ast.walk(ast.parse(src)) if isinstance(n, ast.ImportFrom)}
     assert not any("tk" in str(x).lower() for x in names | froms)
+
+
+# --- Stage 4 guard G3: synthetic crowds, before anything is drawn
+GAP, TOP, BOT = 14.0, 0.0, 1000.0
+
+
+def _check(ys, out, fits=True):
+    assert len(out) == len(ys)
+    assert all(TOP <= y <= BOT for y in out)
+    s = sorted(out)
+    if fits:
+        assert all(b - a >= GAP - 1e-9 for a, b in zip(s, s[1:])), s
+    # order of the true frequencies is kept (ties may share an order)
+    pairs = sorted(zip(ys, out))
+    assert [o for _, o in pairs] == sorted(o for _, o in pairs)
+
+
+def test_g3_20_spots_within_2_khz():
+    # 2 kHz of a 50 kHz span on a 1000 px scale = 40 px; 20 labels need 19 * 14 = 266 px
+    ys = [freq_to_y(14.040 + i * 0.0001, 14.020, 14.070, TOP, BOT) for i in range(20)]
+    out = spread_labels(ys, GAP, TOP, BOT)
+    _check(ys, out)
+    centre = sum(ys) / len(ys)
+    assert abs(sum(out) / len(out) - centre) < 266   # stays near its true frequencies
+
+
+def test_g3_5_spots_at_the_same_frequency():
+    ys = [500.0] * 5
+    out = spread_labels(ys, GAP, TOP, BOT)
+    _check(ys, out)
+    assert max(out) - min(out) == pytest.approx(4 * GAP)
+
+
+def test_g3_labels_at_top_and_bottom_edges():
+    for ys in ([TOP] * 5, [BOT] * 5, [TOP + 1, TOP, TOP + 2], [BOT - 1, BOT, BOT - 2],
+               [TOP, TOP, 500, BOT, BOT]):
+        out = spread_labels(list(map(float, ys)), GAP, TOP, BOT)
+        _check(ys, out)
+
+
+def test_g3_mixed_crowds_and_empty():
+    assert spread_labels([], GAP, TOP, BOT) == []
+    assert spread_labels([300.0], GAP, TOP, BOT) == [300.0]
+    ys = [100.0 + i * 3 for i in range(10)] + [600.0] * 4 + [995.0, 999.0, 1000.0]
+    _check(ys, spread_labels(ys, GAP, TOP, BOT))

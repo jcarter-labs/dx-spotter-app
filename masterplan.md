@@ -211,6 +211,15 @@ Done when: both captures are saved and the Tech table is closed, each parser's a
 Done when: all offline tests pass with no network and no window, including the matching, non-matching and non-CW cases, and a crowded-labels case for `layout`; any shortfall is added to the known limitations list.
 
 ## Stage 4: Features
+Stage 4 guards, done before 4.1:
+- G1 Window capture: capture the app by region from Tk geometry (`winfo_rootx/rooty/width/height`) with `screencapture -R`, scaled for Retina 2x; prove it with one capture before any layout step.
+- G2 Layout checker: `tools/verify_layout.py` compares a capture to the step 1.3 measurements (content area, ±4 px) and prints a pass/fail table; every layout step ends with its output pasted.
+- G3 Label spreading: test the pure layout function first with synthetic crowds (20 spots within 2 kHz; 5 spots at the same frequency; labels at the top and bottom edges) before drawing anything. Two failed fixes means stop and report what was measured.
+- G4 Responsiveness: replay a capture at 50 spots/s; the `after()` tick must stay under 300 ms late, and the window must stay draggable.
+- G5 Threads: a test fails if any worker thread calls Tk; closing the window exits within 2 s and closes the socket.
+- G6 Clipboard: click-to-copy is checked with `pbpaste`, and still works after the app quits.
+- G7 Clicks hit the drawn label position (after spreading), not the spot's frequency.
+
 - 4.1 Controls wired to `settings` (Set, Bandwidth, Window (min), Spotter, Server, Clear; Clear also forces a cluster reconnect and resends the band filter), driven by the single `after()` tick that calls `app.drain()` then redraws.
 - 4.2 Live RBN spots (left scale): blue call signs, leader lines, cluster status dot and retry count.
 - 4.3 Live POTA spots (right scale): green call signs, ticks only, "last poll Ns ago".
