@@ -127,7 +127,7 @@ class SpotterUI:
         self.srv_label = self._label("Server")
         self.srv_box = ttk.Combobox(r, values=["NC7J (AR-Cluster)"], state="readonly", font=F_LABEL)
         self.srv_box.set("NC7J (AR-Cluster)")
-        self.clear_btn = ttk.Button(r, text="Clear", command=a.clear)
+        self.clear_btn = ttk.Button(r, text="Clear", command=self._clear)
         self.dot = tk.Canvas(r, width=8, height=8, bg=GREY, highlightthickness=0, bd=0)
         self.dot_item = self.dot.create_oval(0, 0, 7, 7, fill=DOT["amber"], outline=DOT["amber"])
         self.cluster = self._label("", F_STATUS, anchor="w")
@@ -168,6 +168,11 @@ class SpotterUI:
         ok, msg = self.app.set_frequency(self.freq_var.get())
         self.freq_var.set(f"{self.app.settings.frequency:g}")  # the accepted value, or the old one
         self.msg.config(text="" if ok else msg)
+        self.redraw()
+
+    def _clear(self):
+        self.app.clear()
+        self.msg.config(text="")
         self.redraw()
 
     def _pick(self, fn, box):

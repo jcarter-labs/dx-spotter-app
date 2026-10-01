@@ -12,3 +12,14 @@ pytest
 ```
 
 Git publishing: `git config user.name` / `user.email` set, `ssh -T git@github.com` succeeds, remote `origin` is `git@github.com:jcarter-labs/RSGB-3.git`.
+
+## Run and test
+```sh
+source .venv/bin/activate
+python -m spotter            # the app (needs network: nc7j.com:7373 and api.pota.app)
+pytest                       # all tests; the UI and capture tests need a display
+```
+
+Window capture (`tools/capture_window.py`, `screencapture -R`) needs Screen Recording allowed for the terminal app, and the terminal restarted after allowing it; otherwise captures come back blank.
+Layout check: `python tools/snap_app.py out.png && python tools/verify_layout.py out.png` (canned data, no network).
+Live checks (network): `PYTHONPATH=. python tools/live_check_cluster.py`, `PYTHONPATH=. python tools/live_check_app.py out.png`.
