@@ -1,0 +1,337 @@
+{
+ "_reference": {
+  "screenshot_size": [
+   492,
+   1189
+  ],
+  "title_bar_height": 39,
+  "content_size": [
+   492,
+   1150
+  ],
+  "note": "y is content-area y (title bar excluded). Boxes [x0,y0,x1,y1] inclusive."
+ },
+ "1_title_bar": {
+  "box": [
+   0,
+   0,
+   491,
+   38
+  ],
+  "height_px": 39,
+  "text_box": [
+   207,
+   14,
+   281,
+   27
+  ],
+  "excluded_from_content_checks": true
+ },
+ "2_heading": {
+  "box": [
+   137,
+   22,
+   351,
+   41
+  ]
+ },
+ "3_rule": {
+  "box": [
+   24,
+   54,
+   464,
+   54
+  ]
+ },
+ "canvas": {
+  "box": [
+   0,
+   88,
+   298,
+   1149
+  ]
+ },
+ "4_label_RBN": {
+  "box": [
+   57,
+   72,
+   84,
+   81
+  ]
+ },
+ "5_label_POTA": {
+  "box": [
+   204,
+   72,
+   240,
+   81
+  ]
+ },
+ "6_rbn_scale": {
+  "line_x": 104,
+  "line_y_range": [
+   109,
+   1129
+  ],
+  "tick_x_range": [
+   100,
+   103
+  ],
+  "tick_y_centres": [
+   109.0,
+   313.0,
+   517.0,
+   721.0,
+   925.0,
+   1129.0
+  ],
+  "tick_label_boxes": [
+   [
+    56,
+    105,
+    93,
+    113
+   ],
+   [
+    56,
+    309,
+    93,
+    317
+   ],
+   [
+    56,
+    513,
+    93,
+    521
+   ],
+   [
+    56,
+    717,
+    93,
+    724
+   ],
+   [
+    56,
+    921,
+    93,
+    928
+   ],
+   [
+    56,
+    1125,
+    93,
+    1132
+   ]
+  ],
+  "tick_label_centres_y": [
+   109.0,
+   313.0,
+   517.0,
+   720.5,
+   924.5,
+   1128.5
+  ],
+  "tick_label_right_edge_x": [
+   93,
+   93,
+   93,
+   93,
+   93,
+   93
+  ],
+  "ticks_expected": 6
+ },
+ "8_pota_scale": {
+  "line_x": 284,
+  "line_y_range": [
+   109,
+   1129
+  ],
+  "tick_y_centres": [
+   109.0,
+   313.0,
+   517.0,
+   721.0,
+   925.0,
+   1129.0
+  ],
+  "tick_x_range_right": [
+   285,
+   288
+  ]
+ },
+ "7_rbn_spots": {
+  "text_left_x": 112,
+  "box": [
+   106,
+   307,
+   169,
+   1144
+  ],
+  "note": "box includes leader lines; text_left_x is the left edge of the call-sign text"
+ },
+ "9_pota_spots": {
+  "box": [
+   219,
+   154,
+   283,
+   620
+  ],
+  "text_right_x": 274,
+  "text_right_x_all_rows": [
+   [
+    270,
+    1
+   ],
+   [
+    273,
+    2
+   ],
+   [
+    274,
+    3
+   ],
+   [
+    283,
+    3
+   ]
+  ]
+ },
+ "10_label_frequency": {
+  "box": [
+   312,
+   80,
+   416,
+   91
+  ]
+ },
+ "12_label_bandwidth": {
+  "box": [
+   312,
+   140,
+   411,
+   151
+  ]
+ },
+ "12_bandwidth_dropdown": {
+  "box": [
+   311,
+   155,
+   375,
+   183
+  ]
+ },
+ "13_label_window": {
+  "box": [
+   311,
+   200,
+   394,
+   211
+  ]
+ },
+ "13_window_dropdown": {
+  "box": [
+   311,
+   215,
+   375,
+   243
+  ]
+ },
+ "14_label_spotter": {
+  "box": [
+   312,
+   261,
+   358,
+   272
+  ]
+ },
+ "14_radio_local": {
+  "box": [
+   312,
+   281,
+   360,
+   291
+  ]
+ },
+ "14_radio_regional": {
+  "box": [
+   312,
+   304,
+   382,
+   317
+  ]
+ },
+ "15_label_server": {
+  "box": [
+   312,
+   334,
+   353,
+   342
+  ]
+ },
+ "15_server_dropdown": {
+  "box": [
+   311,
+   348,
+   465,
+   376
+  ]
+ },
+ "16_clear_button": {
+  "box": [
+   311,
+   389,
+   477,
+   418
+  ]
+ },
+ "17_cluster_text": {
+  "box": [
+   356,
+   441,
+   435,
+   453
+  ]
+ },
+ "18_pota_status": {
+  "box": [
+   312,
+   462,
+   449,
+   474
+  ]
+ },
+ "19_shown_status": {
+  "box": [
+   312,
+   483,
+   468,
+   492
+  ]
+ },
+ "11_frequency_textbox": {
+  "box": [
+   311,
+   94,
+   388,
+   123
+  ]
+ },
+ "11_set_button": {
+  "box": [
+   395,
+   94,
+   477,
+   123
+  ]
+ },
+ "17_status_dot": {
+  "box": [
+   313,
+   441,
+   320,
+   448
+  ]
+ },
+ "_check_note": "layout checks pass when a measured box edge is within +/-4 px of these values (content-area y)"
+}
