@@ -107,10 +107,11 @@ def measure(im):
     ys = [y for y in range(CANVAS_TOP, H) if px[rbn_x, y][0] < 60]
     rbn_y0, rbn_y1 = min(ys), max(ys)
     # ticks: rows where the pixel just left of the line is dark
-    tick_rows = groups(range(rbn_y0, rbn_y1 + 1), lambda y: px[rbn_x - 3, y][0] < 100, 0)
+    tick_rows = groups(range(rbn_y0 - 6, min(rbn_y1 + 7, H)), lambda y: px[rbn_x - 3, y][0] < 170, 0)
     ticks_rbn = [(a + b) / 2 for a, b in tick_rows]
-    tick_len_left = max(x for x in range(rbn_x - 15, rbn_x) if px[x, ticks_rbn and int(ticks_rbn[0])][0] < 100)
-    tick_x0 = min(x for x in range(rbn_x - 15, rbn_x) if px[x, int(ticks_rbn[0])][0] < 100)
+    tick_x0 = rbn_x - 3
+    while tick_x0 > rbn_x - 15 and px[tick_x0 - 1, int(ticks_rbn[0])][0] < 170:
+        tick_x0 -= 1  # contiguous dark run left of the line (label text sits beyond a gap)
     labels = []
     for a, b in groups(range(CANVAS_TOP, H), lambda y: any(differs(px[x, y], WHITE, 60) for x in range(40, tick_x0 - 2)), 1):
         bb = bbox(40, a, tick_x0 - 2, b, WHITE, 60)
@@ -130,9 +131,8 @@ def measure(im):
     best = max(range(260, CANVAS_RIGHT), key=lambda x: sum(1 for y in range(CANVAS_TOP, H) if px[x, y][0] < 60))
     pota_x = best
     pys = [y for y in range(CANVAS_TOP, H) if px[pota_x, y][0] < 60]
-    ptick = groups(range(min(pys), max(pys) + 1), lambda y: px[pota_x + 3, y][0] < 100 or px[pota_x - 3, y][0] < 100, 0)
     # ticks only: those that stick out to the right (pota ticks) -- leader lines come from the left
-    ptick_right = groups(range(min(pys), max(pys) + 1), lambda y: px[pota_x + 3, y][0] < 100, 0)
+    ptick_right = groups(range(min(pys) - 6, min(max(pys) + 7, H)), lambda y: px[pota_x + 3, y][0] < 170, 0)
     m["8_pota_scale"] = {
         "line_x": pota_x, "line_y_range": [min(pys) - CONTENT_TOP, max(pys) - CONTENT_TOP],
         "tick_y_centres": [(a + b) / 2 - CONTENT_TOP for a, b in ptick_right],

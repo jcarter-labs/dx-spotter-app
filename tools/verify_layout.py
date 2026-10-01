@@ -5,7 +5,8 @@
 The capture is the content area only (see capture_window.py), at the reference size 492 x 1150.
 It is padded with a reference-style title bar so tools/measure_screenshot.py's measuring code
 runs unchanged, then each measured number is compared with measurements.json. Prints a
-pass/fail table; exit status 1 if any row fails. Elements 7 and 9 (spots) compare only their
+pass/fail table; exit status 1 if any row fails. Data-dependent widths (the Shown line) skip
+their right edge. Elements 7 and 9 (spots) compare only their
 text alignment edge, since their box depends on the spots drawn.
 """
 import json
@@ -21,6 +22,8 @@ ROOT = Path(__file__).resolve().parent.parent
 TOL = 4
 SKIP = {"_reference", "1_title_bar", "_check_note", "panel_block_count"}
 ONLY = {"7_rbn_spots": ["text_left_x"], "9_pota_spots": ["text_right_x"]}
+# text whose width depends on the data shown (the reference counts are 43 / 26): skip the right edge
+SKIP_FIELDS = {("19_shown_status", "box[2]")}
 
 
 def pad_with_title_bar(content: Image.Image, title_h: int) -> Image.Image:
@@ -55,6 +58,8 @@ def compare(expected: dict, got: dict, tol=TOL):
             if fields is not None and top not in fields:
                 continue
             if top in ("height_px", "ticks_expected") or top.endswith("_all_rows") or top == "note":
+                continue
+            if (elem, fpath) in SKIP_FIELDS:
                 continue
             gv = dict(flatten(got.get(elem, {}))).get(fpath)
             if gv is None:

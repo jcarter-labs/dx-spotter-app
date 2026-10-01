@@ -30,7 +30,7 @@ class PotaClient:
     def stop(self):
         self._stop.set()
         if self._thread.is_alive():
-            self._thread.join(self.timeout + 1)
+            self._thread.join(1.0)
 
     def poll_once(self):
         self.poll_times.append(self._clock())

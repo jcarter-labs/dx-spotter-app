@@ -46,7 +46,7 @@ class ClusterClient:
         self._force.set()
         self._close()
         if self._thread.is_alive():
-            self._thread.join(5)
+            self._thread.join(1.5)
 
     def set_band(self, band: int):
         with self._lock:

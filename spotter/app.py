@@ -54,6 +54,7 @@ class App:
         self.pota_last = None
         self.rejected = 0
         self.warning = ""
+        self.warning_prefix = "Frequency is outside"
 
     # --- queue
     def drain(self) -> None:
