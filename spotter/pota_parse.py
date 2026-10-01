@@ -21,4 +21,5 @@ def parse_record(rec) -> Spot | Reject:
         return Reject("bad frequency", rec)
     mode = rec.get("mode")
     mode = mode.strip().upper() if isinstance(mode, str) else ""
-    return Spot(freq_mhz=khz / 1000.0, call=call.strip(), mode=mode)
+    sid = rec.get("spotId")
+    return Spot(freq_mhz=khz / 1000.0, call=call.strip(), mode=mode, spot_id=None if sid is None else str(sid))

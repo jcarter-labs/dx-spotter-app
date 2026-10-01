@@ -7,6 +7,7 @@ class Spot:
     call: str
     mode: str
     skimmer: str | None = None
+    spot_id: str | None = None  # POTA spotId: same id on a later poll means the same report
 
 
 @dataclass(frozen=True)
