@@ -4,7 +4,7 @@ from pathlib import Path
 from spotter.models import Reject, Spot
 from spotter.pota_parse import parse_record
 
-RAW = json.loads((Path(__file__).resolve().parent.parent / "captures" / "pota_spots_raw.json").read_text())
+RAW = json.loads((Path(__file__).resolve().parent.parent / "tests" / "captures" / "pota_spots_raw.json").read_text())
 
 
 def test_accepted_plus_rejected_equals_read():
