@@ -73,6 +73,10 @@ python -m spotter
 
 To try the method on your own app, follow [`masterplan-generator.md`](masterplan-generator.md) with your own idea and screenshot.
 
+## Test data
+
+The files in `tests/captures/` are recorded samples used only to run the tests: a login session with the NC7J DX cluster (nc7j.com), and public spot data and response headers from the Parks on the Air (POTA) API. This data belongs to its original sources and operators.
+
 ## Rights
 
 © 2026 John Carter (N6YU). No license is granted for reuse beyond viewing and forking on GitHub. Prepared for RSGB Convention 2026; contact john@n6yu.com for permissions.
