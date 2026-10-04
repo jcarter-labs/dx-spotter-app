@@ -72,3 +72,7 @@ python -m spotter
 ```
 
 To try the method on your own app, follow [`masterplan-generator.md`](masterplan-generator.md) with your own idea and screenshot.
+
+## Rights
+
+© 2026 John Carter (N6YU). No license is granted for reuse beyond viewing and forking on GitHub. Prepared for RSGB Convention 2026; contact john@n6yu.com for permissions.
