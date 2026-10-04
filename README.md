@@ -1,6 +1,6 @@
 # DX Spotter: a Bandscope-style bandmap for CW, RBN and POTA
 
-![DX Spotter running on macOS](screenshot-RSGB-3.png)
+![DX Spotter running on macOS](screenshot-dx-spotter-app.png)
 
 *The finished app on macOS (live data, Regional spotters, 14.045 MHz, 50 kHz span).*
 
@@ -62,11 +62,15 @@ docs/setup.md   environment and run steps
 measurements.json   measured positions from screenshot.png
 ```
 
+This repository was named `RSGB-3` while it was being built; `masterplan.md` keeps the original name.
+
 ## Try it
 
+Requires Python 3.13 or newer. With a newer Python, use its name (e.g. `python3.14`) in the venv line.
+
 ```sh
-git clone git@github.com:jcarter-labs/RSGB-3.git && cd RSGB-3
-/opt/homebrew/bin/python3.13 -m venv .venv && source .venv/bin/activate
+git clone https://github.com/jcarter-labs/dx-spotter-app.git && cd dx-spotter-app
+python3.13 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python -m spotter
 ```
