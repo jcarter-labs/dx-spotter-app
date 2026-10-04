@@ -83,4 +83,4 @@ The files in `tests/captures/` are recorded samples used only to run the tests: 
 
 ## Rights
 
-© 2026 John Carter (N6YU). No license is granted for reuse beyond viewing and forking on GitHub. Prepared for RSGB Convention 2026; contact john@n6yu.com for permissions.
+© 2026 John Carter (N6YU). Free to use and adapt for personal, non-commercial projects; attribution appreciated. Prepared for RSGB Convention 2026; contact [john@n6yu.com](mailto:john@n6yu.com) for other uses.
