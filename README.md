@@ -26,7 +26,7 @@ The test: start with only an idea and a screenshot, let the generator produce a 
 | File | Role |
 |---|---|
 | [`idea.md`](idea.md) | The app brief, written in an interview with Claude Code: purpose, platform, features, inputs, data sources. |
-| [`idea-original-prompt.md`](idea-original-prompt.md) | Your first words: the raw prompt that the interview turned into `idea.md`. |
+| [`idea-raw-prompt.md`](idea-raw-prompt.md) | Your first words: the raw prompt that the interview turned into `idea.md`. |
 | [`screenshot.png`](screenshot.png) | The look to match (an existing Linux app of the same kind). The build measures it with a script and checks the result against those numbers. |
 | [`masterplan-generator.md`](masterplan-generator.md) | The 20 prompts. The user pastes them into Claude Code to build the masterplan. |
 | [`masterplan.md`](masterplan.md) | The result, and the source of truth for the build. Four parts: **Constitution** (rules for how the agent works), **Spec** (features, screen list, data sources and how each is checked), **Tech** (language, modules, tables, open items), **Tasks** (five stages, each with a "done when" line). |
