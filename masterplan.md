@@ -1,8 +1,8 @@
-# Constitution
+# Ground Rules
 
 RULE: Build from masterplan.md, idea.md and my screenshot; borrow language, tools, specs, or open-source code from examples as I choose.
 RULE: At the start of the build, check tools, libraries, GitHub login, and this folder's repo on my platforms; show pass/fail.
-RULE: After each change, measure the app against the Spec's screen list; show pass/fail.
+RULE: After each change, measure the app against the Project Brief's screen list; show pass/fail.
 RULE: After each working step: run all tests, show me proof, commit, and push to GitHub.
 RULE: When code and masterplan disagree, propose only major changes, one line each; update the masterplan after I approve.
 RULE: Measure UI layout with pixels against reference measurements; never claim "matches" from a visual impression.
@@ -12,12 +12,12 @@ RULE: Run each stage without stopping; stop for my review only at stage end, on 
 RULE: Test connections to outside data with real servers before building screens that depend on them. Live network checks need unsandboxed network access for the agent: ask for it at the start of Stage 2.
 RULE: Get a simple version running early, then add features one at a time, testing each.
 
-# Spec
+# Project Brief
 
 ## Summary
 DX Spotter ("RBN & POTA Spotter"): a macOS graphical bandmap for a CW/DX operator, modelled on the N1MM bandmap (the example app).
 - RBN CW spots from the NC7J AR-Cluster (telnet nc7j.com:7373, login N6YU), limited to the Local or Regional skimmers, are drawn on a vertical linear frequency scale, each call sign on a leader line to its frequency.
-- POTA.app spots (polled every minute) are on a second scale at the right. RBN is blue, POTA green (the reference screenshot draws POTA dark blue; the Spec's green is followed).
+- POTA.app spots (polled every minute) are on a second scale at the right. RBN is blue, POTA green (the reference screenshot draws POTA dark blue; the Project Brief's green is followed).
 - Spots fade over a 5, 10 or 15 min fade time. Clicking a call sign copies it to the clipboard.
 - A side panel holds the controls and status. The app window is resizable.
 
@@ -27,7 +27,7 @@ All seven `idea.md` features are in, including both data sources (A and B). Noth
 ## Features
 Numbered as in `idea.md`. Defaults: frequency 14.045 MHz, bandwidth 50 kHz, fade time 10 min, spotter Regional (as in the screenshot), server NC7J.
 
-Terms: **fade time** = the "Window (min)" setting (that is only its on-screen label); **span** = the displayed frequency range, centre ± bandwidth/2; **app window** = the OS window. **Age** runs from the time the app received the spot. The **current band** is the HF amateur band containing the centre frequency (Tech table).
+Terms: **fade time** = the "Window (min)" setting (that is only its on-screen label); **span** = the displayed frequency range, centre ± bandwidth/2; **app window** = the OS window. **Age** runs from the time the app received the spot. The **current band** is the HF amateur band containing the centre frequency (Architecture table).
 
 1. **Bandmap of RBN spots**: vertical linear scale, higher frequency at the top, spanning centre ± bandwidth/2 (default 14.020 to 14.070 MHz). Each CW spot is a blue call sign (call only) on a leader line to its frequency. The app adds no deduplication beyond one label per call per scale: a new spot of the same call replaces the earlier one (new frequency, age reset); the cluster's own deduplication is otherwise relied on.
    - Test: a spot inside the span is drawn at a position linear in its frequency; a spot outside the span, a non-CW spot, or a spot from a skimmer not in the selected list is not drawn; two spots of one call give one label, at the newer frequency.
@@ -66,8 +66,8 @@ Two sources feed the app; everything else comes from the operator's controls. Pa
 - CW check: the client-side check is authoritative; server-side mode filtering is not trusted.
 - Checks:
   1. Connect: login succeeds within 10 s, meaning the server's post-login prompt (text recorded in step 2.1) is seen, and the dot goes green. Save a raw capture in this folder, before any filtering, of 50 spot lines or 5 minutes, whichever comes first.
-  1a. Band filter: after login, the server-side band filter command `set dx filter Band=<n>` is sent and acknowledged by the reply `DX filter set to: Band = <n>` (matched case-insensitively; see Tech). The filter asks for the band containing the current frequency (20 m at the default). After every reconnect the filter for the current band is sent again.
-  1b. Band change: on a frequency in a different HF amateur band (Tech table), the `cluster_client` worker thread sends the new band filter, which replaces the old one (each `set dx filter` replaces the whole filter), and the old-band spots are flushed. A frequency outside any HF amateur band shows a warning and keeps the last filter. Tested live by changing bands: the new band's spots arrive and the old band's are gone.
+  1a. Band filter: after login, the server-side band filter command `set dx filter Band=<n>` is sent and acknowledged by the reply `DX filter set to: Band = <n>` (matched case-insensitively; see Architecture). The filter asks for the band containing the current frequency (20 m at the default). After every reconnect the filter for the current band is sent again.
+  1b. Band change: on a frequency in a different HF amateur band (Architecture table), the `cluster_client` worker thread sends the new band filter, which replaces the old one (each `set dx filter` replaces the whole filter), and the old-band spots are flushed. A frequency outside any HF amateur band shows a warning and keeps the last filter. Tested live by changing bands: the new band's spots arrive and the old band's are gone.
   1c. Clear: the Clear button empties both scales, forces a reconnect (amber, not counted as a retry) and resends the current band filter; the new filter is acknowledged.
   2. Parse: every captured line gives frequency (kHz to MHz), call, mode and skimmer, or an explicit reject. Accepted plus rejected equals lines read.
   3. Filter: only CW lines from the selected list are shown, per the skimmer match and CW check; Local/Regional switching changes the set. The capture must include a matching suffix, a non-matching suffix and a non-CW line; if the 5-minute capture has none, add hand-made lines marked as such.
@@ -76,7 +76,7 @@ Two sources feed the app; everything else comes from the operator's controls. Pa
   6. Bad data: a malformed or truncated line is skipped, logged, and never crashes the app.
 
 ### Source B: POTA.app API (POTA spots)
-- The POTA.app spots API; endpoint chosen in Tech (not in `idea.md`). Feeds the right scale: CW only, call only, polled every 60 s.
+- The POTA.app spots API; endpoint chosen in Architecture (not in `idea.md`). Feeds the right scale: CW only, call only, polled every 60 s.
 - Checks:
   1. Poll: a live request succeeds and returns spots. Save one raw response in this folder.
   2. Parse: each spot gives frequency, call and mode, or an explicit reject. Accepted plus rejected equals spots returned.
@@ -115,12 +115,12 @@ Right area: control panel, light grey, x ~298 to 492, left-aligned at x ~312
 18. "POTA: last poll 57s ago" (y ~507).
 19. "Shown: RBN 43 · POTA 26" (y ~527).
 
-# Tech
+# Architecture
 
 ## Language and tools (chosen by the operator)
 | Area | Choice | Why |
 |---|---|---|
-| Platform | macOS only | Confirmed by the operator; "my platforms" in the Constitution means macOS. |
+| Platform | macOS only | Confirmed by the operator; "my platforms" in the Ground Rules means macOS. |
 | Language | Python 3.13 or later (python.org or Homebrew, never `/usr/bin/python3`) with Tk 8.6 or 9.x, venv at `./.venv` | The system Python's Tk is too old. |
 | GUI | Tkinter (ttk widgets, Canvas for the bandmap) | The screenshot looks like a Tk app; ships with Python; Canvas suits scales, leader lines and click-to-copy. Fading blends the text colour toward the white background, since Tk has no text transparency. Light colours are forced whatever the macOS appearance. Fonts matched to the reference text widths: Lucida Grande 10 for labels, Arial 10 for status text and call signs, Arial 9 bold for tick labels, Lucida Grande 16 bold for the heading. |
 | Cluster link | Standard-library `socket` in a worker thread, spots passed to the GUI through a queue | No extra package; fits Tk's event loop. `telnetlib` is not used (removed in Python 3.13). |
@@ -188,26 +188,26 @@ Each item stays open until taken from a saved live capture, never from memory; n
 | Login prompt text | **Closed 2026-09-30 (manual `nc` session; also in `tests/captures/cluster_session.txt`).** `login: ` with no newline. Post-login prompt: `N6YU de NC7J <dd-Mon> <hhmm>Z arc6>`. |
 | Real spot-line format | **Closed 2026-09-30 (one line, manual `nc` session, not a saved file).** `DX de WA7LNW-#:  14020.0  XR4T  CW 13 dB 28 WPM CQ  0007Z`: freq in kHz; skimmers end in `-#` or `-<n>-#`. Raw capture saved: `tests/captures/cluster_session.txt` (51 spot lines in 86 s, 20 m). Human (non-skimmer) spots have no mode field, e.g. `DX de KF6IWW:  14253.0  N7MES   0015Z`; the parser gives them a blank mode. |
 
-# Tasks
-Every sub-step follows the Constitution: after each working step, run all tests, show proof, commit and push; after each change to the app, measure it against the Spec's screen list. A stage is not done until its "done when" line is shown as pass.
+# Task Plan
+Every sub-step follows the Ground Rules: after each working step, run all tests, show proof, commit and push; after each change to the app, measure it against the Project Brief's screen list. A stage is not done until its "done when" line is shown as pass.
 
 ## Stage 1: Environment
 - 1.1 Start-of-build check: Python 3.13+ (python.org or Homebrew, never `/usr/bin/python3`) with Tk 8.6 or 9.x (report the exact fix if not), venv, pip, git identity, GitHub login and SSH (`ssh -T git@github.com`), and this folder's repo; show pass/fail for each. (Repo root and `origin` jcarter-labs/RSGB-3 are already set up and pushed.)
 - 1.2 Create `./.venv`, install `requests`, `Pillow` and `pytest`, write the environment steps to `docs/setup.md`, add `.gitignore`; `pytest` runs with one trivial test.
-- 1.3 Measure `screenshot.png` with a script and save the measurements to a file in this folder. All layout checks against the Spec's screen list use these measurements, not the approximate positions in the Spec.
+- 1.3 Measure `screenshot.png` with a script and save the measurements to a file in this folder. All layout checks against the Project Brief's screen list use these measurements, not the approximate positions in the Project Brief.
 
 Done when: every check in 1.1 passes, `pytest` runs inside the venv, and the measurements file gives a measured position and size for each of the 19 screen-list elements (the title bar height is measured too, to set the content-area reference).
 
 ## Stage 2: Data connections
 - 2.1 Save a live NC7J session: login prompt text, band filter command and its acknowledgement, and a raw capture of 50 lines or 5 minutes.
-- 2.2 Save one live POTA.app response. Record both captures' findings in Tech's "Open until a live session" table, with the capture files named.
+- 2.2 Save one live POTA.app response. Record both captures' findings in Architecture's "Open until a live session" table, with the capture files named.
 - 2.3 `cluster_parse` and `pota_parse`, tested on the saved captures.
 - 2.4 `cluster_client` (login, band filter, raw lines and status items on the queue, reconnect at 5, 10, 30 s then every 60 s).
 - 2.5 `pota_client` (60 s poll, raw records on the queue, a status item on failure with old spots kept).
 - 2.6 Test both clients against the live servers, including a forced disconnect and reconnect, a blocked network, and a POTA failure.
 - 2.7 A bare window showing live RBN and POTA spots as two plain text lists (call, freq, age), fed through the queue. No bandmap, layout or styling, and no client-side filtering; each list keeps only its last 50 entries. The server-side band filter stays on, requesting only 20 m (the band containing the default frequency). Depends on 2.1 confirming the filter command; if it cannot, 2.7 drops off-band spots client-side and logs "server filter unconfirmed" until fixed. The window's `after()` tick uses a small temporary drain, which `app` replaces in 3.5. (Done in Stage 2 as `spotter/bare_window.py`; superseded by the real window in Stage 4.)
 
-Done when: both captures are saved and the Tech table is closed, each parser's accepted plus rejected equals the items read, both clients pass the live checks including reconnect with the retry count, and the bare window shows live spots in both lists within 60 s of starting.
+Done when: both captures are saved and the Architecture table is closed, each parser's accepted plus rejected equals the items read, both clients pass the live checks including reconnect with the retry count, and the bare window shows live spots in both lists within 60 s of starting.
 
 ## Stage 3: Core logic (offline tests on the captures)
 - 3.1 `spot_filter` (skimmer match, client-side CW check, frequency range, POTA drops).
@@ -235,7 +235,7 @@ Stage 4 guards, done before 4.1:
 - 4.5 Local/Regional switching.
 - 4.6 Click a call sign to copy it.
 
-Done when: against live data, each feature behaves as in Spec Features (frequency, bandwidth and fade time limits, fade values, counts matching what is on screen, exactly the clicked call sign on the clipboard) and the window stays responsive.
+Done when: against live data, each feature behaves as in Project Brief Features (frequency, bandwidth and fade time limits, fade values, counts matching what is on screen, exactly the clicked call sign on the clipboard) and the window stays responsive.
 
 ## Stage 5: UI
 - 5.1 Layout compared with the stage 1 measurements (±4 px, per the Screen list check rule), pass/fail per screen-list element.

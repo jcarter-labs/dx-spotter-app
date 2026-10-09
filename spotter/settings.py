@@ -6,7 +6,7 @@ FADE_TIMES = (5, 10, 15)
 SPOTTERS = ("Local", "Regional")
 FREQ_MIN, FREQ_MAX = 1.8, 30.0
 
-# Standard US amateur HF bands, edges inclusive, MHz (masterplan Tech table).
+# Standard US amateur HF bands, edges inclusive, MHz (masterplan Architecture table).
 HF_BANDS = {160: (1.800, 2.000), 80: (3.500, 4.000), 40: (7.000, 7.300), 30: (10.100, 10.150),
             20: (14.000, 14.350), 17: (18.068, 18.168), 15: (21.000, 21.450),
             12: (24.890, 24.990), 10: (28.000, 29.700)}

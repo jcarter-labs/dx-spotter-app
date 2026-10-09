@@ -29,7 +29,7 @@ The test: start with only an idea and a screenshot, let the generator produce a 
 | [`idea-raw-prompt.md`](idea-raw-prompt.md) | Your first words: the raw prompt that the interview turned into `idea.md`. |
 | [`screenshot.png`](screenshot.png) | The look to match (an existing Linux app of the same kind). The build measures it with a script and checks the result against those numbers. |
 | [`masterplan-generator.md`](masterplan-generator.md) | The 20 prompts. The user pastes them into Claude Code to build the masterplan. |
-| [`masterplan.md`](masterplan.md) | The result, and the source of truth for the build. Four parts: **Constitution** (rules for how the agent works), **Spec** (features, screen list, data sources and how each is checked), **Tech** (language, modules, tables, open items), **Tasks** (five stages, each with a "done when" line). |
+| [`masterplan.md`](masterplan.md) | The result, and the source of truth for the build. Four parts: **Ground Rules** (rules for how the agent works), **Project Brief** (features, screen list, data sources and how each is checked), **Architecture** (language, modules, tables, open items), **Task Plan** (five stages, each with a "done when" line). |
 
 The flow: `idea.md` + `screenshot.png` → generator prompts → `masterplan.md` → "Build from masterplan.md, starting with Task 1."
 
