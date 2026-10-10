@@ -21,7 +21,7 @@ This repo is a **pressure test of [`masterplan-generator.md`](masterplan-generat
 
 The test: start with only an idea and a screenshot, let the generator produce a masterplan, then have Claude Code build the whole app from that masterplan. The DX Spotter is the test subject. It is a good one because it has two live data sources, a pixel-checkable screen, and real-time behaviour.
 
-## The method, in four files
+## The method, in five files
 
 | File | Role |
 |---|---|

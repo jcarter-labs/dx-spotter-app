@@ -192,7 +192,7 @@ Each item stays open until taken from a saved live capture, never from memory; n
 Every sub-step follows the Ground Rules: after each working step, run all tests, show proof, commit and push; after each change to the app, measure it against the Project Brief's screen list. A stage is not done until its "done when" line is shown as pass.
 
 ## Stage 1: Environment
-- 1.1 Start-of-build check: Python 3.13+ (python.org or Homebrew, never `/usr/bin/python3`) with Tk 8.6 or 9.x (report the exact fix if not), venv, pip, git identity, GitHub login and SSH (`ssh -T git@github.com`), and this folder's repo; show pass/fail for each. (Repo root and `origin` jcarter-labs/RSGB-3 are already set up and pushed.)
+- 1.1 Start-of-build check: Python 3.13+ (python.org or Homebrew, never `/usr/bin/python3`) with Tk 8.6 or 9.x (report the exact fix if not), venv, pip, git identity, GitHub login and SSH (`ssh -T git@github.com`), and this folder's repo; show pass/fail for each. (Repo root and `origin` jcarter-labs/dx-spotter-app are already set up and pushed.)
 - 1.2 Create `./.venv`, install `requests`, `Pillow` and `pytest`, write the environment steps to `docs/setup.md`, add `.gitignore`; `pytest` runs with one trivial test.
 - 1.3 Measure `screenshot.png` with a script and save the measurements to a file in this folder. All layout checks against the Project Brief's screen list use these measurements, not the approximate positions in the Project Brief.
 
